@@ -230,8 +230,9 @@ val_files = [TFRec_data+f for f in os.listdir(TFRec_data) if 'val' in f]# if pat
 
 tv_cond = tf.placeholder(tf.string)
 #x_noise = tf.placeholder(tf.float32, [batch_size, 224, 224, 3]) #passed in as right shape
-x_pipeline, y_pipeline = input_pipeline(files,batch_size) #MAKE FILE LIST
-x_valpipeline, y_valpipeline = input_pipeline(val_files,batch_size) #MAKE FILE LIST
+with tf.device('/cpu:0'):
+     x_pipeline, y_pipeline = input_pipeline(files,batch_size) #MAKE FILE LIST
+     x_valpipeline, y_valpipeline = input_pipeline(val_files,batch_size) #MAKE FILE LIST
 def xt(): return x_pipeline
 def xv(): return x_valpipeline
 def yt(): return y_pipeline
