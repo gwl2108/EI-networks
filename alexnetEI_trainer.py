@@ -310,7 +310,7 @@ global_step = tf.Variable(0, trainable=False)
 #learning_rate = tf.placeholder(tf.float32) #.01 #tf.train.polynomial_decay(.001, global_step,
                                           #1e5, .0001,
                                           #power=0.5)
-learning_rate = tf.train.polynomial_decay(.01, global_step,
+learning_rate = tf.train.polynomial_decay(lr, global_step,
                                           decay, .001,
                                           power=0.5)
 # setup the optimizer
@@ -321,9 +321,12 @@ with tf.name_scope('optimizer'):
 
     #optimizer = tf.train.AdamOptimizer(learning_rate)
     #optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-    optimizer = tf.train.MomentumOptimizer(learning_rate, momentum=.9)
+    optimizer = tf.train.MomentumOptimizer(learning_rate, momentum=mom)
     gvs = optimizer.compute_gradients(cumm_loss)
-    capped_gvs = [(tf.clip_by_value(grad, -1., 1.), var) for grad, var in gvs]
+    if clip:
+       capped_gvs = [(tf.clip_by_value(grad, -1., 1.), var) for grad, var in gvs]
+    else:
+       capped_gvs = gvs
     train_step = optimizer.apply_gradients(capped_gvs, global_step=global_step)
     #gradients, variables = zip(*optimizer.compute_gradients(cumm_loss))
     #gradients, _ = tf.clip_by_global_norm(gradients, 1.0)
